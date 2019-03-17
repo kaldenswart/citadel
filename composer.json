@@ -16,5 +16,8 @@
         "psr-4": {
             "AllSeeingEye\\": ""
         }
+    },
+    "require": {
+        "ext-sockets": "*"
     }
 }
