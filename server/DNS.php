@@ -31,7 +31,7 @@ class DNS {
 
                 $packet = new Packet(...$bytes);
 
-                var_dump($packet);
+
             }
         }
     }

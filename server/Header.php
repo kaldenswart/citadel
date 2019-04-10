@@ -19,6 +19,10 @@ final class Header {
     private $additional_count;
 
     public function __construct(int... $bits) {
+        $this->extractFromBits(...$bits);
+    }
+
+    private function extractFromBits(int... $bits){
         $index = 0;
         $id = Util::array_extract($bits, $index, ($index += 16));
         $query_or_response = Util::array_extract($bits, $index, ($index += 1));
