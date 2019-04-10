@@ -144,4 +144,56 @@ final class Header {
         return $this->additional_count;
     }
 
+    /**
+     * @return int[]
+     */
+    public function toBits() : array{
+        $bits = [];
+
+        foreach($this->id as $bit){
+            $bits []= $bit;
+        }
+
+        $bits []= (int)($this->query_or_response);
+
+        foreach($this->operation_code as $bit){
+            $bits []= $bit;
+        }
+
+        $bits []= (int)($this->authoritative_answer);
+        $bits []= (int)($this->truncated_message);
+        $bits []= (int)($this->recursion_desired);
+        $bits []= (int)($this->recursion_available);
+
+        foreach($this->z as $bit){
+            $bits []= $bit;
+        }
+
+        foreach($this->response_code as $bit){
+            $bits []= $bit;
+        }
+
+        $qdcount = Util::int2bits($this->question_count, 16);
+        foreach($qdcount as $bit){
+            $bits []= $bit;
+        }
+
+        $ancount = Util::int2bits($this->answer_count, 16);
+        foreach($ancount as $bit){
+            $bits []= $bit;
+        }
+
+        $nscount = Util::int2bits($this->authority_count, 16);
+        foreach($nscount as $bit){
+            $bits []= $bit;
+        }
+
+        $arcount = Util::int2bits($this->additional_count, 16);
+        foreach($arcount as $bit){
+            $bits []= $bit;
+        }
+
+        return $bits;
+    }
+
 }

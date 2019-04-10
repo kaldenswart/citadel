@@ -11,14 +11,7 @@ final class Packet {
         $bits = Util::bytes2bits(...$bytes);
 
         $this->header = new Header(...Util::array_extract($bits, 0, 96));
-        $this->questions = Question::extractFromBits($this->header, ...$bits);
-
-        foreach($this->questions as $question){
-            echo "Name: " . $question->getName() . "\n";
-            echo "Type: " . $question->getType() . "\n";
-            echo "Class: " . $question->getClass() . "\n";
-            echo "\n";
-        }
+        $this->questions = Record::extractFromBits($this->header, 0, ...$bits);
     }
 
     /**
@@ -26,6 +19,22 @@ final class Packet {
      */
     public function getHeader(): Header {
         return $this->header;
+    }
+
+    /**
+     * @return int[]
+     */
+    public function toBits() : array{
+        $bits = $this->header->toBits();
+
+        foreach($this->questions as $question){
+            $question_bits = $question->toBits();
+            foreach($question_bits as $bit){
+                $bits []= $bit;
+            }
+        }
+
+        return $bits;
     }
 
 }
