@@ -54,94 +54,185 @@ final class Header {
     }
 
     /**
-     * @return array
+     * @return mixed
      */
-    public function getId(): array {
+    public function getId() {
         return $this->id;
     }
 
     /**
-     * @return float|int
+     * @param mixed $id
+     */
+    public function setId($id): void {
+        $this->id = $id;
+    }
+
+    /**
+     * @return mixed
      */
     public function getQueryOrResponse() {
         return $this->query_or_response;
     }
 
     /**
-     * @return array
+     * @param mixed $query_or_response
      */
-    public function getOperationCode(): array {
+    public function setQueryOrResponse($query_or_response): void {
+        $this->query_or_response = $query_or_response;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOperationCode() {
         return $this->operation_code;
     }
 
     /**
-     * @return float|int
+     * @param mixed $operation_code
+     */
+    public function setOperationCode($operation_code): void {
+        $this->operation_code = $operation_code;
+    }
+
+    /**
+     * @return mixed
      */
     public function getAuthoritativeAnswer() {
         return $this->authoritative_answer;
     }
 
     /**
-     * @return float|int
+     * @param mixed $authoritative_answer
+     */
+    public function setAuthoritativeAnswer($authoritative_answer): void {
+        $this->authoritative_answer = $authoritative_answer;
+    }
+
+    /**
+     * @return mixed
      */
     public function getTruncatedMessage() {
         return $this->truncated_message;
     }
 
     /**
-     * @return float|int
+     * @param mixed $truncated_message
+     */
+    public function setTruncatedMessage($truncated_message): void {
+        $this->truncated_message = $truncated_message;
+    }
+
+    /**
+     * @return mixed
      */
     public function getRecursionDesired() {
         return $this->recursion_desired;
     }
 
     /**
-     * @return float|int
+     * @param mixed $recursion_desired
+     */
+    public function setRecursionDesired($recursion_desired): void {
+        $this->recursion_desired = $recursion_desired;
+    }
+
+    /**
+     * @return mixed
      */
     public function getRecursionAvailable() {
         return $this->recursion_available;
     }
 
     /**
-     * @return array
+     * @param mixed $recursion_available
      */
-    public function getZ(): array {
+    public function setRecursionAvailable($recursion_available): void {
+        $this->recursion_available = $recursion_available;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getZ() {
         return $this->z;
     }
 
     /**
-     * @return array
+     * @param mixed $z
      */
-    public function getResponseCode(): array {
+    public function setZ($z): void {
+        $this->z = $z;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getResponseCode() {
         return $this->response_code;
     }
 
     /**
-     * @return float|int
+     * @param mixed $response_code
+     */
+    public function setResponseCode($response_code): void {
+        $this->response_code = $response_code;
+    }
+
+    /**
+     * @return mixed
      */
     public function getQuestionCount() {
         return $this->question_count;
     }
 
     /**
-     * @return float|int
+     * @param mixed $question_count
+     */
+    public function setQuestionCount($question_count): void {
+        $this->question_count = $question_count;
+    }
+
+    /**
+     * @return mixed
      */
     public function getAnswerCount() {
         return $this->answer_count;
     }
 
     /**
-     * @return float|int
+     * @param mixed $answer_count
+     */
+    public function setAnswerCount($answer_count): void {
+        $this->answer_count = $answer_count;
+    }
+
+    /**
+     * @return mixed
      */
     public function getAuthorityCount() {
         return $this->authority_count;
     }
 
     /**
-     * @return float|int
+     * @param mixed $authority_count
+     */
+    public function setAuthorityCount($authority_count): void {
+        $this->authority_count = $authority_count;
+    }
+
+    /**
+     * @return mixed
      */
     public function getAdditionalCount() {
         return $this->additional_count;
+    }
+
+    /**
+     * @param mixed $additional_count
+     */
+    public function setAdditionalCount($additional_count): void {
+        $this->additional_count = $additional_count;
     }
 
     /**

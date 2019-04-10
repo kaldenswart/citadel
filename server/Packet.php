@@ -22,6 +22,27 @@ final class Packet {
     }
 
     /**
+     * @param Header $header
+     */
+    public function setHeader(Header $header): void {
+        $this->header = $header;
+    }
+
+    /**
+     * @return Record[]
+     */
+    public function getQuestions(): array {
+        return $this->questions;
+    }
+
+    /**
+     * @param Record[] $questions
+     */
+    public function setQuestions(Record... $questions): void {
+        $this->questions = $questions;
+    }
+
+    /**
      * @return int[]
      */
     public function toBits() : array{
