@@ -35,21 +35,25 @@ class DNS {
             if(($data = socket_recvfrom($this->socket, $buffer, 512, 0, $remote_ip, $remote_port)) !== false) {
                 $bytes = unpack("C*", $buffer);
 
-                $packet = new Packet(...$bytes);
+                $packet = new Packet($remote_ip, $remote_port, ...$bytes);
 
-                $response_packet = $this->resolver->resolve($packet);
+                echo "New Packet: " . (Util::bits2int(...$packet->getHeader()->getId())) . " from: " . $remote_ip . "\n";
 
-                $packet_bytes = Util::bits2bytes(...$response_packet->toBits());
-                $index_shifted_bytes = [];
-                for($i = 0; $i < sizeof($packet_bytes); $i++){
-                    $index_shifted_bytes[$i+1] = $packet_bytes[$i];
-                }
-
-                $response_buffer = call_user_func_array("pack", array_merge(["C*"], $index_shifted_bytes));
-
-                socket_sendto($this->socket, $response_buffer, 512, 0, $remote_ip, $remote_port);
+                $this->resolver->resolve($this, $packet);
             }
         }
+    }
+
+    public function sendPacket(Packet $packet){
+        $packet_bytes = Util::bits2bytes(...$packet->toBits());
+        $index_shifted_bytes = []; //@todo Refactor into Util class
+        for ($i = 0; $i < sizeof($packet_bytes); $i++) {
+            $index_shifted_bytes[$i + 1] = $packet_bytes[$i];
+        }
+
+        $response_buffer = call_user_func_array("pack", array_merge(["C*"], $index_shifted_bytes));
+
+        socket_sendto($this->socket, $response_buffer, 512, 0, $packet->getRemoteIp(), $packet->getRemotePort());
     }
 
 }

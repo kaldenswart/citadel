@@ -2,25 +2,44 @@
 
 namespace AllSeeingEye\server\Resolvers;
 
+use AllSeeingEye\server\DNS;
 use AllSeeingEye\server\Packet;
 use AllSeeingEye\server\Resolver;
+use AllSeeingEye\server\Util;
 
 class UpstreamResolver implements Resolver {
 
-    private $primary_dns;
-    private $secondary_dns;
+    private $dns;
 
-    public function __construct(string $primary_dns, string $secondary_dns) {
-        $this->primary_dns = $primary_dns;
-        $this->secondary_dns = $secondary_dns;
+    private $expected_responses = [];
+
+    public function __construct(string $dns) {
+        $this->dns = $dns;
     }
 
-    public function resolve(Packet $packet): Packet {
-        $header = $packet->getHeader();
-        $header->setQueryOrResponse(true);
-        $packet->setHeader($header);
+    public function resolve(DNS $dns, Packet $packet) {
+        $id = Util::bits2int(...$packet->getHeader()->getId());
+        if($packet->isQuery()){
+            $this->expected_responses [$id]= [
+                "id" => $id,
+                "remote_ip" => $packet->getRemoteIp(),
+                "remote_port" => $packet->getRemotePort()
+            ];
 
-        return $packet;
+            $packet->setRemoteIp($this->dns);
+            $packet->setRemotePort(53);
+
+            $dns->sendPacket($packet);
+        }else{
+            if(isset($this->expected_responses[$id])) {
+                $expected_response = $this->expected_responses[$id];
+
+                $packet->setRemoteIp($expected_response["remote_ip"]);
+                $packet->setRemotePort($expected_response["remote_port"]);
+
+                $dns->sendPacket($packet);
+            }
+        }
     }
 
 }

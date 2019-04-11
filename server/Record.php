@@ -5,13 +5,15 @@ namespace AllSeeingEye\server;
 class Record {
 
     private $name;
+    private $name_byte_position;
     private $type;
     private $class;
     private $ttl;
     private $length;
 
-    public function __construct(string $name, int $type, int $class, int $ttl = null, int $length = null) {
+    public function __construct(string $name, int $name_byte_position, int $type, int $class, int $ttl = null, int $length = null) {
         $this->name = $name;
+        $this->name_byte_position = $name_byte_position;
         $this->type = $type;
         $this->class = $class;
         $this->ttl = $ttl;
@@ -21,7 +23,7 @@ class Record {
     /**
      * @param Header $header
      * @param int $starting_position
-     * @param int ...$bits
+     * @param int[] $bits
      * @return static[]
      */
     public static function extractFromBits(Header $header, int $starting_position, int... $bits){
@@ -32,6 +34,7 @@ class Record {
 
         for($i = 0; $i < $header->getQuestionCount(); $i++){
             $msb = Util::array_extract($body_bits, $bit_position, ($bit_position + 2));
+            $name_byte_position = $bit_position / 8;
             $name = "";
             if($msb === [1, 1]){ //Jump Position
                 //@todo Add in jump position reading
@@ -42,7 +45,7 @@ class Record {
             $type = Util::bits2int(...Util::array_extract($body_bits, $bit_position, $bit_position += 16));
             $class = Util::bits2int(...Util::array_extract($body_bits, $bit_position, $bit_position += 16));
 
-            $questions []= new static($name, $type, $class);
+            $questions []= new static($name, $name_byte_position, $type, $class);
         }
 
         //@todo Add parsing for 3 other record sections
@@ -77,6 +80,27 @@ class Record {
     }
 
     /**
+     * @param string $name
+     */
+    public function setName(string $name): void {
+        $this->name = $name;
+    }
+
+    /**
+     * @return int
+     */
+    public function getNameBytePosition(): int {
+        return $this->name_byte_position;
+    }
+
+    /**
+     * @param int $name_byte_position
+     */
+    public function setNameBytePosition(int $name_byte_position): void {
+        $this->name_byte_position = $name_byte_position;
+    }
+
+    /**
      * @return int
      */
     public function getType(): int {
@@ -84,10 +108,24 @@ class Record {
     }
 
     /**
+     * @param int $type
+     */
+    public function setType(int $type): void {
+        $this->type = $type;
+    }
+
+    /**
      * @return int
      */
     public function getClass(): int {
         return $this->class;
+    }
+
+    /**
+     * @param int $class
+     */
+    public function setClass(int $class): void {
+        $this->class = $class;
     }
 
     /**

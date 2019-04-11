@@ -4,6 +4,6 @@ namespace AllSeeingEye\server;
 
 interface Resolver {
 
-    public function resolve(Packet $packet) : Packet;
+    public function resolve(DNS $dns, Packet $packet);
 
 }
