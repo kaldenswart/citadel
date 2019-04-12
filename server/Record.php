@@ -31,6 +31,8 @@ class Record {
     public static function extractFromBits(int &$bit_position, bool $full_preamble = false, int... $bits){
         $msb = Util::array_extract($bits, $bit_position, ($bit_position + 2));
         $name_byte_position = $bit_position / 8;
+
+        //@todo: Change to recursively detect and use jump position
         if($msb === [1, 1]){ //Jump Position
             $jump_position = Util::bits2int(...Util::array_extract($bits, ($bit_position += 8), ($bit_position += 8))) * 8;
             $name_byte_position = $jump_position / 8;
@@ -70,6 +72,7 @@ class Record {
             if($name_length === 0){
                 $reading_name = false;
             }else{
+                echo $name_length . "\n";
                 for($x = 0; $x < $name_length; $x++){
                     $name_char = Util::bits2int(...Util::array_extract($body_bits, $bit_position, $bit_position += 8));
                     $name .= chr($name_char);
