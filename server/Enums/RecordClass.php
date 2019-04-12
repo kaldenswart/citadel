@@ -1,6 +1,6 @@
 <?php
 
-namespace AllSeeingEye\server\Enums;
+namespace Citadel\server\Enums;
 
 class RecordClass {
 

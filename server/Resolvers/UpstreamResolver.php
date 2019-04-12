@@ -1,11 +1,11 @@
 <?php
 
-namespace AllSeeingEye\server\Resolvers;
+namespace Citadel\server\Resolvers;
 
-use AllSeeingEye\server\DNS;
-use AllSeeingEye\server\Packet;
-use AllSeeingEye\server\Resolver;
-use AllSeeingEye\server\Util;
+use Citadel\server\DNS;
+use Citadel\server\Packet;
+use Citadel\server\Resolver;
+use Citadel\server\Util;
 
 class UpstreamResolver implements Resolver {
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace AllSeeingEye\server;
+namespace Citadel\server;
 
 use \Exception;
 
