@@ -1,5 +1,5 @@
 {
-    "name": "citedal",
+    "name": "citadel",
     "description": "PHP based DNS Server with abstraction level resolving",
     "keywords": ["dns", "self-hosted", "self", "hosted", "selfhosted", "php", "domain", "name", "server", "abstraction", "resolving"],
     "license": "GPL-3.0",
