@@ -37,8 +37,6 @@ class DNS {
 
                 $packet = new Packet($remote_ip, $remote_port, ...$bytes);
 
-                echo "New Packet: " . (Util::bits2int(...$packet->getHeader()->getId())) . " from: " . $remote_ip . "\n";
-
                 $this->resolver->resolve($this, $packet);
             }
         }
@@ -46,7 +44,7 @@ class DNS {
 
     public function sendPacket(Packet $packet){
         $packet_bytes = Util::bits2bytes(...$packet->toBits());
-        $index_shifted_bytes = []; //@todo Refactor into Util class
+        $index_shifted_bytes = [];
         for ($i = 0; $i < sizeof($packet_bytes); $i++) {
             $index_shifted_bytes[$i + 1] = $packet_bytes[$i];
         }

@@ -55,11 +55,6 @@ abstract class Util {
         return bindec($string);
     }
 
-    /**
-     * @param int $int
-     * @param int $padding
-     * @return int[]
-     */
     public static function int2bits(int $int, int $padding = 0) : array{
         $bits = [];
         $bit_string = decbin($int);
@@ -70,7 +65,7 @@ abstract class Util {
             }
         }
         for($i = 0; $i < strlen($bit_string); $i++){
-            $bits[]= $bit_string[$i];
+            $bits[]= (int)$bit_string[$i];
         }
         return $bits;
     }

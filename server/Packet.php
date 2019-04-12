@@ -5,7 +5,10 @@ namespace AllSeeingEye\server;
 final class Packet {
 
     private $header;
-    private $questions;
+    private $questions = [];
+    private $answers = [];
+    private $authorities = [];
+    private $additionals = [];
 
     private $remote_ip;
     private $remote_port;
@@ -16,8 +19,25 @@ final class Packet {
 
         $bits = Util::bytes2bits(...$bytes);
 
-        $this->header = new Header(...Util::array_extract($bits, 0, 96));
-        $this->questions = Record::extractFromBits($this->header, 0, ...$bits);
+        $bit_position = 0;
+
+        $this->header = new Header(...Util::array_extract($bits, $bit_position, $bit_position += 96));
+
+        for($i = 0; $i < $this->header->getQuestionCount(); $i++){
+            $this->questions []= Record::extractFromBits($bit_position, false, ...$bits);
+        }
+
+        for($i = 0; $i < $this->header->getAnswerCount(); $i++){
+            $this->answers []= Record::extractFromBits($bit_position, true, ...$bits);
+        }
+
+        for($i = 0; $i < $this->header->getAuthorityCount(); $i++){
+            $this->authorities []= Record::extractFromBits($bit_position, true, ...$bits);
+        }
+
+        for($i = 0; $i < $this->header->getAdditionalCount(); $i++){
+            $this->additionals []= Record::extractFromBits($bit_position, true, ...$bits);
+        }
     }
 
     /**
@@ -46,6 +66,48 @@ final class Packet {
      */
     public function setQuestions(Record... $questions): void {
         $this->questions = $questions;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAnswers(): array {
+        return $this->answers;
+    }
+
+    /**
+     * @param array $answers
+     */
+    public function setAnswers(array $answers): void {
+        $this->answers = $answers;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAuthorities(): array {
+        return $this->authorities;
+    }
+
+    /**
+     * @param array $authorities
+     */
+    public function setAuthorities(array $authorities): void {
+        $this->authorities = $authorities;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAdditionals(): array {
+        return $this->additionals;
+    }
+
+    /**
+     * @param array $additionals
+     */
+    public function setAdditionals(array $additionals): void {
+        $this->additionals = $additionals;
     }
 
     /**
@@ -89,14 +151,39 @@ final class Packet {
     public function toBits() : array{
         $bits = $this->header->toBits();
 
-        foreach($this->questions as $question){
+        $question_name_bit_locations = [];
+
+        foreach($this->questions as $question){ /* @var $question Record */
+            $question_name_bit_locations[$question->getName()] = $question->getNameBytePosition();
             $question_bits = $question->toBits();
             foreach($question_bits as $bit){
                 $bits []= $bit;
             }
         }
 
-        //@todo Add other 3 types
+        foreach($this->answers as $answer){ /* @var $answer Record */
+            $name_bit_location = (isset($question_name_bit_locations[$answer->getName()])) ? $question_name_bit_locations[$answer->getName()] : false;
+            $answer_bits = $answer->toBits($name_bit_location);
+            foreach($answer_bits as $bit){
+                $bits []= $bit;
+            }
+        }
+
+        foreach($this->authorities as $authority){ /* @var $authority Record */
+            $name_bit_location = (isset($question_name_bit_locations[$authority->getName()])) ? $question_name_bit_locations[$authority->getName()] : false;
+            $authority_bits = $authority->toBits($name_bit_location);
+            foreach($authority_bits as $bit){
+                $bits []= $bit;
+            }
+        }
+
+        foreach($this->additionals as $additional){ /* @var $additional Record */
+            $name_bit_location = (isset($question_name_bit_locations[$additional->getName()])) ? $question_name_bit_locations[$additional->getName()] : false;
+            $additional_bits = $additional->toBits($name_bit_location);
+            foreach($additional_bits as $bit){
+                $bits []= $bit;
+            }
+        }
 
         return $bits;
     }
