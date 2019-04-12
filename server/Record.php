@@ -29,20 +29,7 @@ class Record {
      * @return static
      */
     public static function extractFromBits(int &$bit_position, bool $full_preamble = false, int... $bits){
-        $msb = Util::array_extract($bits, $bit_position, ($bit_position + 2));
-        $name_byte_position = $bit_position / 8;
-
-        //@todo: Change to recursively detect and use jump position
-        if($msb === [1, 1]){ //Jump Position
-            $jump_position = Util::bits2int(...Util::array_extract($bits, ($bit_position += 8), ($bit_position += 8))) * 8;
-            $name_byte_position = $jump_position / 8;
-            $return_position = $bit_position;
-            $bit_position = $jump_position;
-            $name = static::extractName($bit_position, ...$bits);
-            $bit_position = $return_position;
-        }else{ //Normal Parse
-            $name = static::extractName($bit_position, ...$bits);
-        }
+        $name = static::extractNameFromBitArray($bit_position, $name_byte_location, ...$bits);
 
         $type = Util::bits2int(...Util::array_extract($bits, $bit_position, $bit_position += 16));
         $class = Util::bits2int(...Util::array_extract($bits, $bit_position, $bit_position += 16));
@@ -61,26 +48,37 @@ class Record {
             $data = null;
         }
 
-        return new static($name, $name_byte_position, $type, $class, $ttl, $length, $data);
+        return new static($name, $name_byte_location, $type, $class, $ttl, $length, $data);
     }
 
-    private static function extractName(int &$bit_position, int... $body_bits) : string{
+    private static function extractNameFromBitArray(int &$bit_position, int &$name_byte_location, int... $bits) : string{
         $name = "";
-        $reading_name = true;
-        while($reading_name){
-            $name_length = Util::bits2int(...Util::array_extract($body_bits, $bit_position, $bit_position += 8));
-            if($name_length === 0){
-                $reading_name = false;
-            }else{
-                echo $name_length . "\n";
-                for($x = 0; $x < $name_length; $x++){
-                    $name_char = Util::bits2int(...Util::array_extract($body_bits, $bit_position, $bit_position += 8));
-                    $name .= chr($name_char);
+        if(Util::array_extract($bits, $bit_position, $bit_position + 2) === [1, 1]){
+            $jump_position = Util::bits2int(...Util::array_extract($bits, $bit_position, ($bit_position += 16)));
+            $jump_position = ($jump_position ^ 192) * 8;
+            $return_position = $bit_position;
+            $bit_position = $jump_position;
+            $name = static::extractNameFromBitArray($bit_position, $name_byte_location, ...$bits);
+            $name_byte_location = $jump_position / 8;
+            $bit_position = $return_position;
+        }else{
+            $name_byte_location = $bit_position / 8;
+            $reading_name = true;
+            while($reading_name){
+                $name_length = Util::bits2int(...Util::array_extract($bits, $bit_position, $bit_position += 8));
+                if($name_length === 0){
+                    $reading_name = false;
+                }else{
+                    echo $name_length . "\n";
+                    for($x = 0; $x < $name_length; $x++){
+                        $name_char = Util::bits2int(...Util::array_extract($bits, $bit_position, $bit_position += 8));
+                        $name .= chr($name_char);
+                    }
+                    $name .= ".";
                 }
-                $name .= ".";
             }
+            $name = substr($name, 0, strlen($name)-1);
         }
-        $name = substr($name, 0, strlen($name)-1);
         return $name;
     }
 
