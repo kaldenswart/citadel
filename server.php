@@ -1,13 +1,13 @@
 <?php
 
-namespace AllSeeingEye;
+namespace Citadel;
 
-use AllSeeingEye\server\DNS;
-use AllSeeingEye\server\Resolvers\UpstreamResolver;
+use Citadel\server\DNS;
+use Citadel\server\Resolvers\UpstreamResolver;
 
 include_once(__DIR__ . "/vendor/autoload.php");
 
-$upstream_resolver = new UpstreamResolver("8.8.8.8");
+$upstream_resolver = new UpstreamResolver("1.1.1.1");
 $dns = new DNS($upstream_resolver);
 
 $dns->setErrorCallback(function(\Exception $e){
