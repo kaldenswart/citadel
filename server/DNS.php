@@ -6,6 +6,8 @@ use \Exception;
 
 final class DNS {
 
+    private $running = false;
+
     private $resolver;
     private $error_callback;
     private $socket;
@@ -53,7 +55,9 @@ final class DNS {
             throw new Exception($errormessage, $errorcode);
         }
 
-        while(true){
+        $this->running = true;
+
+        while($this->running){
             if(($data = socket_recvfrom($this->socket, $buffer, 512, 0, $remote_ip, $remote_port)) !== false) {
                 try{
                     $bytes = unpack("C*", $buffer);
@@ -65,6 +69,11 @@ final class DNS {
                 }
             }
         }
+    }
+
+    public function stop(){
+        $this->running = false;
+        socket_close($this->socket);
     }
 
     public function sendPacket(Packet $packet){

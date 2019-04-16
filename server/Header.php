@@ -18,8 +18,10 @@ final class Header {
     private $authority_count;
     private $additional_count;
 
-    public function __construct(int... $bits) {
-        $this->extractFromBits(...$bits);
+    public function __construct($bits = null) {
+        if($bits !== null) {
+            $this->extractFromBits(...$bits);
+        }
     }
 
     private function extractFromBits(int... $bits){

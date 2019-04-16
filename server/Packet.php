@@ -21,7 +21,7 @@ final class Packet {
 
         $bit_position = 0;
 
-        $this->header = new Header(...Util::array_extract($bits, $bit_position, $bit_position += 96));
+        $this->header = new Header(Util::array_extract($bits, $bit_position, $bit_position += 96));
 
         for($i = 0; $i < $this->header->getQuestionCount(); $i++){
             $this->questions []= Record::extractFromBits($bit_position, false, ...$bits);
