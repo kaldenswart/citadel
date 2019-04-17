@@ -12,7 +12,7 @@ class Record {
     private $length;
     private $data;
 
-    public function __construct(string $name, int $name_byte_position, int $type, int $class, int $ttl = null, int $length = null, array $data = null) {
+    public function __construct(string $name = null, int $name_byte_position = null, int $type = null, int $class = null, int $ttl = null, int $length = null, array $data = null) {
         $this->name = $name;
         $this->name_byte_position = $name_byte_position;
         $this->type = $type;

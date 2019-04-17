@@ -1,6 +1,6 @@
 <?php
 
-namespace Citadel\tests;
+namespace Citadel\tests\server;
 
 use Citadel\server\Util;
 use PHPUnit\Framework\TestCase;
