@@ -69,44 +69,44 @@ final class Packet {
     }
 
     /**
-     * @return array
+     * @return Record[]
      */
     public function getAnswers(): array {
         return $this->answers;
     }
 
     /**
-     * @param array $answers
+     * @param Record[] $answers
      */
-    public function setAnswers(array $answers): void {
+    public function setAnswers(Record... $answers): void {
         $this->answers = $answers;
     }
 
     /**
-     * @return array
+     * @return Record[]
      */
     public function getAuthorities(): array {
         return $this->authorities;
     }
 
     /**
-     * @param array $authorities
+     * @param Record[] $authorities
      */
-    public function setAuthorities(array $authorities): void {
+    public function setAuthorities(Record... $authorities): void {
         $this->authorities = $authorities;
     }
 
     /**
-     * @return array
+     * @return Record[]
      */
     public function getAdditionals(): array {
         return $this->additionals;
     }
 
     /**
-     * @param array $additionals
+     * @param Record[] $additionals
      */
-    public function setAdditionals(array $additionals): void {
+    public function setAdditionals(Record... $additionals): void {
         $this->additionals = $additionals;
     }
 
