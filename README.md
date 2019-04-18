@@ -99,7 +99,8 @@ DNS requests are made using a UDP packet. The packet has the same format for bot
 
 #### Class Table
 *All classes have the following namespace: **Citadel/server***
-|  Class      | Description                                                                                                                                                                                   |
+
+| Class      | Description                                                                                                                                                                                   |
 |------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | DNS              | Handles the single-threaded socket server listening for incomming requests and sending out responses.                                                                                         |
 | Packet           | Handles all translations for converting raw packets into functional objects.                                                                                                                  |
