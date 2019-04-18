@@ -40,6 +40,7 @@ final class DNS {
     }
 
     /**
+     * @codeCoverageIgnore
      * @throws Exception
      */
     public function start(){
@@ -71,11 +72,17 @@ final class DNS {
         }
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function stop(){
         $this->running = false;
         socket_close($this->socket);
     }
 
+    /**
+     * @codeCoverageIgnore
+     */
     public function sendPacket(Packet $packet){
         try{
             $packet_bytes = Util::bits2bytes(...$packet->toBits());

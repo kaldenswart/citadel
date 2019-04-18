@@ -17,6 +17,11 @@ class UpstreamResolver implements Resolver {
         $this->dns = $dns;
     }
 
+    /**
+     * @param DNS $dns
+     * @param Packet $packet
+     * @codeCoverageIgnore
+     */
     public function resolve(DNS $dns, Packet $packet) {
         $id = Util::bits2int(...$packet->getHeader()->getId());
         if($packet->isQuery()){
