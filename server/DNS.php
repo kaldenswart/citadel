@@ -58,6 +58,13 @@ final class DNS {
 
         $this->running = true;
 
+        $this->startThread();
+    }
+
+    /**
+     * @codeCoverageIgnore
+     */
+    private function startThread(){
         while($this->running){
             if(($data = socket_recvfrom($this->socket, $buffer, 512, 0, $remote_ip, $remote_port)) !== false) {
                 try{
