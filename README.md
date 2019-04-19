@@ -2,6 +2,7 @@
 
 [![Travis CI Build](https://travis-ci.com/InterferenceObject/citadel.svg?branch=master)](https://travis-ci.com/InterferenceObject/citadel.svg?branch=master)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D7.2-informational.svg)](https://img.shields.io/badge/php-%3E%3D7.2.14-informational.svg)
+[![GitHub](https://img.shields.io/github/license/interferenceobject/citadel.svg)](https://github.com/InterferenceObject/citadel/blob/master/LICENSE)
 
 A DNS server written in PHP that allows you to build your own resolver, cause why not...
 
