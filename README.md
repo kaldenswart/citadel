@@ -4,6 +4,10 @@
 
 A DNS server written in PHP that allows you to build your own resolver, cause why not...
 
+```shell
+composer require interferenceobject/citadel
+```
+
 ## Basic Usage
 ```php
 use Citadel\server\DNS;
