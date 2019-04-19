@@ -7,4 +7,5 @@ before_script:
   - chmod +x ./cc-test-reporter
   - ./cc-test-reporter before-build
 after_script:
+  - echo $TRAVIS_TEST_RESULT
   - ./cc-test-reporter after-build --coverage-input-type clover --id 59be142c23880638d09d52f79c8848229c2c0b94740eaacf2697eacce416cc0e --exit-code $TRAVIS_TEST_RESULT
