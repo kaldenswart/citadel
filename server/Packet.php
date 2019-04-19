@@ -155,36 +155,22 @@ final class Packet {
 
         foreach($this->questions as $question){ /* @var $question Record */
             $question_name_bit_locations[$question->getName()] = $question->getNameBytePosition();
-            $question_bits = $question->toBits();
-            foreach($question_bits as $bit){
-                $bits []= $bit;
-            }
+            array_push($bits, ...$question->toBits());
         }
 
-        foreach($this->answers as $answer){ /* @var $answer Record */
-            $name_bit_location = (isset($question_name_bit_locations[$answer->getName()])) ? $question_name_bit_locations[$answer->getName()] : false;
-            $answer_bits = $answer->toBits($name_bit_location);
-            foreach($answer_bits as $bit){
-                $bits []= $bit;
-            }
-        }
+        array_push($bits, ...$this->convertRecordArrayToBits($question_name_bit_locations, $this->answers));
+        array_push($bits, ...$this->convertRecordArrayToBits($question_name_bit_locations, $this->authorities));
+        array_push($bits, ...$this->convertRecordArrayToBits($question_name_bit_locations, $this->additionals));
 
-        foreach($this->authorities as $authority){ /* @var $authority Record */
-            $name_bit_location = (isset($question_name_bit_locations[$authority->getName()])) ? $question_name_bit_locations[$authority->getName()] : false;
-            $authority_bits = $authority->toBits($name_bit_location);
-            foreach($authority_bits as $bit){
-                $bits []= $bit;
-            }
-        }
+        return $bits;
+    }
 
-        foreach($this->additionals as $additional){ /* @var $additional Record */
-            $name_bit_location = (isset($question_name_bit_locations[$additional->getName()])) ? $question_name_bit_locations[$additional->getName()] : false;
-            $additional_bits = $additional->toBits($name_bit_location);
-            foreach($additional_bits as $bit){
-                $bits []= $bit;
-            }
+    private function convertRecordArrayToBits($question_name_bit_locations, $record_array){
+        $bits = [];
+        foreach($record_array as $record){ /* @var $record Record */
+            $name_bit_location = (isset($question_name_bit_locations[$record->getName()])) ? $question_name_bit_locations[$record->getName()] : false;
+            array_push($bits, ...$record->toBits($name_bit_location));
         }
-
         return $bits;
     }
 

@@ -12,14 +12,11 @@ class Record {
     private $length;
     private $data;
 
-    public function __construct(string $name = null, int $name_byte_position = null, int $type = null, int $class = null, int $ttl = null, int $length = null, array $data = null) {
+    public function __construct(string $name = null, int $name_byte_position = null, int $type = null, int $class = null) {
         $this->name = $name;
         $this->name_byte_position = $name_byte_position;
         $this->type = $type;
         $this->class = $class;
-        $this->ttl = $ttl;
-        $this->length = $length;
-        $this->data = $data;
     }
 
     /**
@@ -35,21 +32,15 @@ class Record {
         $type = Util::bits2int(...Util::array_extract($bits, $bit_position, $bit_position += 16));
         $class = Util::bits2int(...Util::array_extract($bits, $bit_position, $bit_position += 16));
 
-        if($full_preamble){
-            $ttl = Util::bits2int(...Util::array_extract($bits, $bit_position, $bit_position += 32));
-            $length = Util::bits2int(...Util::array_extract($bits, $bit_position, $bit_position += 16));
-            if($length > 0){
-                $data = Util::array_extract($bits, $bit_position, ($bit_position += ($length * 8)));
-            }else{
-                $data = null;
-            }
-        }else{
-            $ttl = null;
-            $length = null;
-            $data = null;
-        }
+        $ttl = ($full_preamble) ? Util::bits2int(...Util::array_extract($bits, $bit_position, $bit_position += 32)) : null;
+        $length = ($full_preamble) ? Util::bits2int(...Util::array_extract($bits, $bit_position, $bit_position += 16)) : null;
+        $data = ($full_preamble & $length > 0) ? Util::array_extract($bits, $bit_position, ($bit_position += ($length * 8))) : null;
 
-        return new static($name, $name_byte_location, $type, $class, $ttl, $length, $data);
+        $record = new static($name, $name_byte_location, $type, $class);
+        $record->setTtl($ttl);
+        $record->setLength($length);
+        $record->setData($data);
+        return $record;
     }
 
     private static function extractNameFromBitArray(int &$bit_position, int &$name_byte_location, int... $bits) : string{
@@ -58,25 +49,36 @@ class Record {
         $name_byte_location = $bit_position / 8;
         while($reading){
             $byte = Util::bits2int(...Util::array_extract($bits, $bit_position, ($bit_position += 8)));
-            if($byte === 0){
-                $name = substr($name, 0, strlen($name)-1);
-                $reading = false;
-            }else if($byte === 192){
-                $position = Util::bits2int(...Util::array_extract($bits, $bit_position, ($bit_position += 8))) * 8;
-                $return_position = $bit_position;
-                $bit_position = $position;
-                $name .= static::extractNameFromBitArray($bit_position, $name_byte_location, ...$bits);
-                $name_byte_location = $position / 8;
-                $bit_position = $return_position;
-                $reading = false;
-            }else{
-                for($x = 0; $x < $byte; $x++){
-                    $name_char = Util::bits2int(...Util::array_extract($bits, $bit_position, $bit_position += 8));
-                    $name .= chr($name_char);
-                }
-                $name .= ".";
+
+            switch($byte){
+                case 0:
+                    $name = substr($name, 0, strlen($name)-1);
+                    $reading = false;
+                    break;
+                case 192:
+                    $position = Util::bits2int(...Util::array_extract($bits, $bit_position, ($bit_position += 8))) * 8;
+                    $return_position = $bit_position;
+                    $bit_position = $position;
+                    $name .= static::extractNameFromBitArray($bit_position, $name_byte_location, ...$bits);
+                    $name_byte_location = $position / 8;
+                    $bit_position = $return_position;
+                    $reading = false;
+                    break;
+                default:
+                    $name .= self::readName($bit_position, $byte, ...$bits);
+                    break;
             }
         }
+        return $name;
+    }
+
+    private static function readName(int &$bit_position, int $byte, int... $bits){
+        $name = "";
+        for($x = 0; $x < $byte; $x++){
+            $name_char = Util::bits2int(...Util::array_extract($bits, $bit_position, $bit_position += 8));
+            $name .= chr($name_char);
+        }
+        $name .= ".";
         return $name;
     }
 
@@ -146,7 +148,7 @@ class Record {
     /**
      * @param int $ttl
      */
-    public function setTtl(int $ttl): void {
+    public function setTtl(int $ttl = null): void {
         $this->ttl = $ttl;
     }
 
@@ -160,7 +162,7 @@ class Record {
     /**
      * @param int $length
      */
-    public function setLength(int $length): void {
+    public function setLength(int $length = null): void {
         $this->length = $length;
     }
 
@@ -174,7 +176,7 @@ class Record {
     /**
      * @param array $data
      */
-    public function setData(array $data): void {
+    public function setData(array $data = null): void {
         $this->data = $data;
     }
 
@@ -183,63 +185,40 @@ class Record {
      * @return int[]
      */
     public function toBits($name_bit_location = false) : array{
+        $bits = $this->convertNameToBitArray($name_bit_location);
+        array_push($bits, ...Util::int2bits($this->type, 16));
+        array_push($bits, ...Util::int2bits($this->class, 16));
+
+        if($this->ttl !== null) {
+            array_push($bits, ...Util::int2bits($this->ttl, 32));
+        }
+        if($this->length !== null){
+            array_push($bits, ...Util::int2bits($this->length, 16));
+        }
+        if($this->data !== null){
+            array_push($bits, ...$this->data);
+        }
+
+        return $bits;
+    }
+
+    private function convertNameToBitArray($name_bit_location = false){
         $bits = [];
 
         if($name_bit_location === false){
             $name_split = explode(".", $this->name);
             foreach($name_split as $name){
                 $name_length = strlen($name);
-                $name_length_bits = Util::int2bits($name_length, 8);
-                foreach($name_length_bits as $bit){
-                    $bits []= $bit;
-                }
+                array_push($bits, ...Util::int2bits($name_length, 8));
 
                 for($i = 0; $i < $name_length; $i++){
-                    $name_bits = Util::int2bits(ord($name[$i]), 8);
-                    foreach($name_bits as $bit){
-                        $bits []= $bit;
-                    }
+                    array_push($bits, ...Util::int2bits(ord($name[$i]), 8));
                 }
             }
-            $name_bits = Util::int2bits(0, 8);
-            foreach($name_bits as $bit){
-                $bits []= $bit;
-            }
+            array_push($bits, ...Util::int2bits(0, 8));
         }else{
-            $name_bits = array_merge([1, 1, 0, 0, 0, 0, 0, 0], Util::int2bits($name_bit_location, 8));
-            foreach($name_bits as $bit){
-                $bits []= $bit;
-            }
-        }
-
-        $type_bits = Util::int2bits($this->type, 16);
-        foreach($type_bits as $bit){
-            $bits []= $bit;
-        }
-
-        $class_bits = Util::int2bits($this->class, 16);
-        foreach($class_bits as $bit){
-            $bits []= $bit;
-        }
-
-        if($this->ttl !== null){
-            $ttl_bits = Util::int2bits($this->ttl, 32);
-            foreach($ttl_bits as $bit){
-                $bits []= $bit;
-            }
-        }
-
-        if($this->length !== null){
-            $length_bits = Util::int2bits($this->length, 16);
-            foreach($length_bits as $bit){
-                $bits []= $bit;
-            }
-        }
-
-        if($this->data !== null){
-            foreach($this->data as $bit){
-                $bits []= $bit;
-            }
+            array_push($bits, ...[1, 1, 0, 0, 0, 0, 0, 0]);
+            array_push($bits, ...Util::int2bits($name_bit_location, 8));
         }
 
         return $bits;
