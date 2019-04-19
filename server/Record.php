@@ -185,7 +185,13 @@ class Record {
      * @return int[]
      */
     public function toBits($name_bit_location = false) : array{
-        $bits = $this->convertNameToBitArray($name_bit_location);
+        $bits = [];
+        if($name_bit_location === false){
+            array_push($bits, ...$this->convertNameToBitArray());
+        }else{
+            array_push($bits, ...[1, 1, 0, 0, 0, 0, 0, 0]);
+            array_push($bits, ...Util::int2bits($name_bit_location, 8));
+        }
         array_push($bits, ...Util::int2bits($this->type, 16));
         array_push($bits, ...Util::int2bits($this->class, 16));
 
@@ -202,25 +208,19 @@ class Record {
         return $bits;
     }
 
-    private function convertNameToBitArray($name_bit_location = false){
+    private function convertNameToBitArray(){
         $bits = [];
 
-        if($name_bit_location === false){
-            $name_split = explode(".", $this->name);
-            foreach($name_split as $name){
-                $name_length = strlen($name);
-                array_push($bits, ...Util::int2bits($name_length, 8));
+        $name_split = explode(".", $this->name);
+        foreach($name_split as $name){
+            $name_length = strlen($name);
+            array_push($bits, ...Util::int2bits($name_length, 8));
 
-                for($i = 0; $i < $name_length; $i++){
-                    array_push($bits, ...Util::int2bits(ord($name[$i]), 8));
-                }
+            for($i = 0; $i < $name_length; $i++){
+                array_push($bits, ...Util::int2bits(ord($name[$i]), 8));
             }
-            array_push($bits, ...Util::int2bits(0, 8));
-        }else{
-            array_push($bits, ...[1, 1, 0, 0, 0, 0, 0, 0]);
-            array_push($bits, ...Util::int2bits($name_bit_location, 8));
         }
-
+        array_push($bits, ...Util::int2bits(0, 8));
         return $bits;
     }
 
