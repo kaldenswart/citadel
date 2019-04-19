@@ -1,6 +1,8 @@
 # Citadel
 
 [![Travis CI Build](https://travis-ci.com/InterferenceObject/citadel.svg?branch=master)](https://travis-ci.com/InterferenceObject/citadel.svg?branch=master)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/71047db550623410af14/test_coverage)](https://codeclimate.com/github/InterferenceObject/citadel/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/71047db550623410af14/maintainability)](https://codeclimate.com/github/InterferenceObject/citadel/maintainability)
 [![PHP Version](https://img.shields.io/badge/php-%3E%3D7.2-informational.svg)](https://img.shields.io/badge/php-%3E%3D7.2.14-informational.svg)
 [![GitHub](https://img.shields.io/github/license/interferenceobject/citadel.svg)](https://github.com/InterferenceObject/citadel/blob/master/LICENSE)
 
