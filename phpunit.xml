@@ -15,6 +15,7 @@
             <directory suffix=".php">server</directory>
             <exclude>
                 <directory suffix=".php">server/Enums</directory>
+                <file>server/Resolver.php</file>
             </exclude>
         </whitelist>
     </filter>
