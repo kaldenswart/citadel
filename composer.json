@@ -1,6 +1,6 @@
 {
     "name": "interferenceobject/citadel",
-    "description": "PHP based DNS Server with abstraction level resolving",
+    "description": "A DNS server writen in PHP that allows you to build your own resolver, cause why not...",
     "keywords": ["dns", "self-hosted", "self", "hosted", "selfhosted", "php", "domain", "name", "server", "abstraction", "resolving"],
     "license": "GPL-3.0",
     "authors": [
