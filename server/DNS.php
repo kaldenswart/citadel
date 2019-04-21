@@ -44,30 +44,12 @@ final class DNS {
      * @throws Exception
      */
     public function start(){
-        if(!($this->socket = socket_create(AF_INET, SOCK_DGRAM, 0))){
-            $errorcode = socket_last_error();
-            $errormessage = socket_strerror($errorcode);
-            throw new Exception($errormessage, $errorcode);
-        }
-
-        if(!socket_bind($this->socket, $this->ip, $this->port)){
-            $errorcode = socket_last_error();
-            $errormessage = socket_strerror($errorcode);
-            throw new Exception($errormessage, $errorcode);
-        }
-
         $this->running = true;
 
-        $this->startThread();
-    }
-
-    /**
-     * @codeCoverageIgnore
-     */
-    private function startThread(){
         while($this->running){
-            if(($data = socket_recvfrom($this->socket, $buffer, 512, 0, $remote_ip, $remote_port)) !== false) {
+            if(($this->socket = socket_create(AF_INET, SOCK_DGRAM, 0)) && socket_bind($this->socket, $this->ip, $this->port)){
                 try{
+                    socket_recvfrom($this->socket, $buffer, 512, 0, $remote_ip, $remote_port);
                     $bytes = unpack("C*", $buffer);
                     $packet = new Packet($remote_ip, $remote_port, ...$bytes);
                     $this->resolver->resolve($this, $packet);
@@ -75,6 +57,10 @@ final class DNS {
                     $error_callback = $this->error_callback;
                     $error_callback($e);
                 }
+            }else{
+                $errorcode = socket_last_error();
+                $errormessage = socket_strerror($errorcode);
+                throw new Exception($errormessage, $errorcode);
             }
         }
     }
