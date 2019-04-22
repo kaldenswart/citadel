@@ -224,24 +224,24 @@ final class Header {
     public function toBits() : array{
         $bits = [];
 
-        array_push($bits, ...$this->id);
+        Util::array_push($bits, ...$this->id);
 
         $bits []= (int)($this->query_or_response);
 
-        array_push($bits, ...$this->operation_code);
+        Util::array_push($bits, ...$this->operation_code);
 
         $bits []= (int)($this->authoritative_answer);
         $bits []= (int)($this->truncated_message);
         $bits []= (int)($this->recursion_desired);
         $bits []= (int)($this->recursion_available);
 
-        array_push($bits, ...$this->z);
-        array_push($bits, ...$this->response_code);
+        Util::array_push($bits, ...$this->z);
+        Util::array_push($bits, ...$this->response_code);
 
-        array_push($bits, ...Util::int2bits($this->question_count, 16));
-        array_push($bits, ...Util::int2bits($this->answer_count, 16));
-        array_push($bits, ...Util::int2bits($this->authority_count, 16));
-        array_push($bits, ...Util::int2bits($this->additional_count, 16));
+        Util::array_push($bits, ...Util::int2bits($this->question_count, 16));
+        Util::array_push($bits, ...Util::int2bits($this->answer_count, 16));
+        Util::array_push($bits, ...Util::int2bits($this->authority_count, 16));
+        Util::array_push($bits, ...Util::int2bits($this->additional_count, 16));
 
         return $bits;
     }

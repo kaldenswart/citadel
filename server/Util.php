@@ -70,4 +70,10 @@ abstract class Util {
         return $bits;
     }
 
+    public static function array_push(&$array1, ...$vars){
+        if(sizeof($vars) > 0){
+            array_push($array1, ...$vars);
+        }
+    }
+
 }

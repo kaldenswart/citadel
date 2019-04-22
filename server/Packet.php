@@ -155,12 +155,12 @@ final class Packet {
 
         foreach($this->questions as $question){ /* @var $question Record */
             $question_name_bit_locations[$question->getName()] = $question->getNameBytePosition();
-            array_push($bits, ...$question->toBits());
+            Util::array_push($bits, ...$question->toBits());
         }
 
-        array_push($bits, ...$this->convertRecordArrayToBits($question_name_bit_locations, $this->answers));
-        array_push($bits, ...$this->convertRecordArrayToBits($question_name_bit_locations, $this->authorities));
-        array_push($bits, ...$this->convertRecordArrayToBits($question_name_bit_locations, $this->additionals));
+        Util::array_push($bits, ...$this->convertRecordArrayToBits($question_name_bit_locations, $this->answers));
+        Util::array_push($bits, ...$this->convertRecordArrayToBits($question_name_bit_locations, $this->authorities));
+        Util::array_push($bits, ...$this->convertRecordArrayToBits($question_name_bit_locations, $this->additionals));
 
         return $bits;
     }
@@ -169,7 +169,7 @@ final class Packet {
         $bits = [];
         foreach($record_array as $record){ /* @var $record Record */
             $name_bit_location = (isset($question_name_bit_locations[$record->getName()])) ? $question_name_bit_locations[$record->getName()] : false;
-            array_push($bits, ...$record->toBits($name_bit_location));
+            Util::array_push($bits, ...$record->toBits($name_bit_location));
         }
         return $bits;
     }

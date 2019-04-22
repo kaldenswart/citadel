@@ -41,4 +41,16 @@ class UtilTest extends TestCase {
         $this->assertEquals([0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0], $bits);
     }
 
+    public function testArrayPush(){
+        $array1 = [1, 2];
+        $array2 = [3, 4];
+        Util::array_push($array1, ...$array2);
+        $this->assertEquals([1, 2, 3, 4], $array1);
+
+        $array1 = [1, 2];
+        $array2 = [];
+        Util::array_push($array1, ...$array2);
+        $this->assertEquals([1, 2], $array1);
+    }
+
 }
